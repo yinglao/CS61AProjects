@@ -151,17 +151,17 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
             return strategy1, score1, score0
     while score0 < goal and score1 < goal:
         dice = select_dice(score0, score1, dice_swapped = dice_swapped)
-        strategy, current_score, opponent_score = role_info(player)
-        num_roll = strategy(current_score, opponent_score)
+        strategy, score, opponent_score = role_info(player)
+        num_roll = strategy(score, opponent_score)
         if num_roll == -1:
-            current_score = current_score + 1
+            score = score + 1
             dice_swapped = not dice_swapped
         else:
-            current_score = current_score + take_turn(num_roll, opponent_score, dice)
+            score = score + take_turn(num_roll, opponent_score, dice)
         if player == 0:
-            score0 = current_score
+            score0 = score
         else: 
-            score1 = current_score
+            score1 = score
         if score0 == 2 * score1 or score1 == 2 * score0:
             score0, score1 = score1, score0
         player = other(player)
@@ -243,7 +243,13 @@ def check_strategy(strategy, goal=GOAL_SCORE):
     AssertionError: strategy(102, 115) returned 100 (invalid number of rolls)
     """
     # BEGIN PROBLEM 6
-    "*** REPLACE THIS LINE ***"
+    score, opponent_score = 0, 0
+    while score < 100:
+        while opponent_score < 100:
+            num_roll = strategy(score, opponent_score)
+            check_strategy_roll(score, opponent_score, num_roll)
+            opponent_score = opponent_score + 1
+        score = score + 1
     # END PROBLEM 6
 
 
@@ -261,7 +267,12 @@ def make_averaged(fn, num_samples=1000):
     3.75
     """
     # BEGIN PROBLEM 7
-    "*** REPLACE THIS LINE ***"
+    def average_fn(*args):
+        total, k = 0, 1
+        while k <= num_samples:
+            total, k = total + fn(*args), k + 1
+        return total / num_samples
+    return average_fn
     # END PROBLEM 7
 
 
@@ -275,7 +286,15 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     10
     """
     # BEGIN PROBLEM 8
-    "*** REPLACE THIS LINE ***"
+    final_num, max_score, num_rolls = 0, 0, 1
+    while num_rolls <= 10:
+        average_nrolls = make_averaged(roll_dice, num_samples)
+        score = average_nrolls(num_rolls, dice)
+        if score > max_score:
+            score = max_score
+            final_num = num_rolls
+        num_rolls = num_rolls + 1
+    return final_num
     # END PROBLEM 8
 
 
