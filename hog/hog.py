@@ -144,9 +144,27 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
     player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     dice_swapped = False  # Whether 4-sided dice have been swapped for 6-sided
     # BEGIN PROBLEM 5
-    
-    while current_score < 0:
-        using_dice = select_dice(score0, score1, dice_swapped)
+    def role_info(player):
+        if player == 0:
+            return strategy0, score0, score1
+        else:
+            return strategy1, score1, score0
+    while score0 < goal and score1 < goal:
+        dice = select_dice(score0, score1, dice_swapped = dice_swapped)
+        strategy, current_score, opponent_score = role_info(player)
+        num_roll = strategy(current_score, opponent_score)
+        if num_roll == -1:
+            current_score = current_score + 1
+            dice_swapped = not dice_swapped
+        else:
+            current_score = current_score + take_turn(num_roll, opponent_score, dice)
+        if player == 0:
+            score0 = current_score
+        else: 
+            score1 = current_score
+        if score0 == 2 * score1 or score1 == 2 * score0:
+            score0, score1 = score1, score0
+        player = other(player)
         
     # END PROBLEM 5
     return score0, score1
