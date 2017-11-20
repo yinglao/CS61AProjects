@@ -19,15 +19,16 @@ def roll_dice(num_rolls, dice=six_sided):
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
-    one_not_exist = 1 # make a switch 
+    num_of_ones = 0
     total, k = 0, 1
     while k <= num_rolls:
         score = dice()
         if score == 1:
-            total, k = total + 1, k + 1
-            one_not_exist = 0 # now switch
+            num_of_ones = num_of_ones + 1
         else:
-            total, k = total + score * one_not_exist, k + 1
+            total, k = total + score, k + 1
+    if num_of_ones != 0:
+        total = num_of_ones
     return total
     # END PROBLEM 1
 
@@ -35,7 +36,8 @@ def roll_dice(num_rolls, dice=six_sided):
 def free_bacon(opponent_score):
     """Return the points scored from rolling 0 dice (Free Bacon)."""
     # BEGIN PROBLEM 2
-    return max(opponent_score % 10, opponent_score // 10) + 1
+    score = max(opponent_score % 10, opponent_score // 10) + 1
+    return score
     # END PROBLEM 2
 
 
@@ -150,8 +152,9 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
         else:
             return strategy1, score1, score0
     while score0 < goal and score1 < goal:
-        dice = select_dice(score0, score1, dice_swapped = dice_swapped)
         strategy, score, opponent_score = role_info(player)
+        dice = select_dice(score, opponent_score, dice_swapped = dice_swapped)
+        
         num_roll = strategy(score, opponent_score)
         if num_roll == -1:
             score = score + 1
@@ -319,7 +322,7 @@ def average_win_rate(strategy, baseline=always_roll(4)):
 
 def run_experiments():
     """Run a series of strategy experiments and report results."""
-    if True:  # Change to False when done finding max_scoring_num_rolls
+    if False:  # Change to False when done finding max_scoring_num_rolls
         six_sided_max = max_scoring_num_rolls(six_sided)
         print('Max scoring num rolls for six-sided dice:', six_sided_max)
         rerolled_max = max_scoring_num_rolls(reroll(six_sided))
@@ -331,7 +334,7 @@ def run_experiments():
     if False:  # Change to True to test bacon_strategy
         print('bacon_strategy win rate:', average_win_rate(bacon_strategy))
 
-    if False:  # Change to True to test swap_strategy
+    if True:  # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
 
     "*** You may add additional experiments as you wish ***"
@@ -344,8 +347,13 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     and rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 9
-    "*** REPLACE THIS LINE ***"
-    return 4  # Replace this statement
+    bacon = free_bacon(opponent_score)
+    if is_prime(bacon):
+        bacon = next_prime(bacon)
+    if  bacon >= margin:
+        return 0
+    else:
+        return num_rolls
     # END PROBLEM 9
 check_strategy(bacon_strategy)
 
@@ -356,8 +364,13 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     NUM_ROLLS.
     """
     # BEGIN PROBLEM 10
-    "*** REPLACE THIS LINE ***"
-    return 4  # Replace this statement
+    bacon = free_bacon(opponent_score)
+    if is_prime(bacon):
+        bacon = next_prime(bacon)
+    if (score + bacon) * 2 == opponent_score or bacon >= margin:
+        return 0
+    else:
+        return num_rolls
     # END PROBLEM 10
 check_strategy(swap_strategy)
 
