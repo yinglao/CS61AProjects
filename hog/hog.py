@@ -328,7 +328,7 @@ def run_experiments():
         rerolled_max = max_scoring_num_rolls(reroll(six_sided))
         print('Max scoring num rolls for re-rolled dice:', rerolled_max)
 
-    if False:  # Change to True to test always_roll(8)
+    if True:  # Change to True to test always_roll(8)
         print('always_roll(8) win rate:', average_win_rate(always_roll(8)))
 
     if False:  # Change to True to test bacon_strategy
@@ -367,8 +367,11 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     """
     # BEGIN PROBLEM 10
     bacon = free_bacon(opponent_score)
+<<<<<<< Updated upstream
     if is_prime(bacon):
         bacon = next_prime(bacon)
+=======
+>>>>>>> Stashed changes
     if (score + bacon) * 2 == opponent_score or bacon >= margin:
         return 0
     else:
